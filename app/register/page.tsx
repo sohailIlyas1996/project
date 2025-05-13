@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "@/lib/firebase"; // Import Firebase Auth
-import { useRouter } from 'next/navigation'; // Import useRouter
-import { collection, addDoc, setDoc, doc } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase";
+import { useRouter } from 'next/navigation';
+import { setDoc, doc } from "firebase/firestore";
+
 export default function Register() {
   // State variables for user details
   const [fullName, setFullName] = useState("");

@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import QRCode from "qrcode";
 import { v4 as uuidv4 } from "uuid";
+import Image from "next/image";
 
 export default function Dashboard() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
@@ -234,7 +235,14 @@ export default function Dashboard() {
               {qrCode && (
                 <div className="mt-4 p-4 bg-white/5 rounded-lg">
                   <h3 className="text-sm font-medium mb-2">Generated QR Code</h3>
-                  <img src={qrCode} alt="Product QR Code" className="w-32 h-32 mx-auto" />
+                  <div className="relative w-32 h-32 mx-auto">
+                    <Image
+                      src={qrCode}
+                      alt="Product QR Code"
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
                 </div>
               )}
 
