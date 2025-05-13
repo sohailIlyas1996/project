@@ -2,14 +2,26 @@
 
 import { useEffect, useState } from "react";
 import { auth, db, storage } from "@/lib/firebase";
-import { doc, getDoc, addDoc, collection } from "firebase/firestore";
-import { signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { doc, getDoc, addDoc, collection, getDocs, query, where } from "firebase/firestore";
+import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { useRouter } from "next/navigation";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import QRCode from "qrcode";
 import { v4 as uuidv4 } from "uuid";
 import Image from "next/image";
+import Link from "next/link";
+
+interface Product {
+  productId: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+  qrCode: string;
+  userEmail: string;
+  userId: string;
+  createdAt: Date;
+}
 
 export default function Dashboard() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
@@ -20,6 +32,8 @@ export default function Dashboard() {
   const [qrCode, setQrCode] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0); // To track upload progress
+  const [userProducts, setUserProducts] = useState<Product[]>([]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -45,6 +59,19 @@ export default function Dashboard() {
     fetchUser();
   }, [router]);
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserEmail(user.email);
+        fetchUserProducts(user.uid);
+      } else {
+        setUserEmail(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -67,11 +94,34 @@ export default function Dashboard() {
     }
   };
 
+  const fetchUserProducts = async (userId: string) => {
+    try {
+      setIsLoadingProducts(true);
+      const productsQuery = query(
+        collection(db, "products"),
+        where("userId", "==", userId)
+      );
+      const querySnapshot = await getDocs(productsQuery);
+      const products = querySnapshot.docs.map(doc => ({
+        ...doc.data(),
+        createdAt: doc.data().createdAt?.toDate(),
+      })) as Product[];
+      
+      // Sort products by creation date (newest first)
+      products.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+      setUserProducts(products);
+    } catch (error) {
+      console.error("Error fetching user products:", error);
+    } finally {
+      setIsLoadingProducts(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setMessage("");
-    setUploadProgress(0); // Reset progress before starting
+    setUploadProgress(0);
 
     try {
       const currentUser = auth.currentUser;
@@ -87,7 +137,7 @@ export default function Dashboard() {
         try {
           console.log("Starting file upload...", imageFile);
 
-          const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+          const maxSize = 5 * 1024 * 1024;
           if (imageFile.size > maxSize) {
             throw new Error("File size must be less than 5MB");
           }
@@ -107,39 +157,34 @@ export default function Dashboard() {
             cacheControl: 'public,max-age=31536000'
           };
 
-          const uploadTask = uploadBytesResumable(fileRef, imageFile, metadata);
+          // Create a new promise to handle the upload
+          imageUrl = await new Promise((resolve, reject) => {
+            const uploadTask = uploadBytesResumable(fileRef, imageFile, metadata);
 
-          uploadTask.on('state_changed',
-            (snapshot) => {
-              const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-              setUploadProgress(progress); // Update upload progress
-
-              switch (snapshot.state) {
-                case 'paused':
-                  console.log('Upload is paused');
-                  break;
-                case 'running':
-                  console.log('Upload is running');
-                  break;
-              }
-            },
-            (error) => {
-              console.error("Upload error:", error);
-              throw new Error(`File upload failed: ${error.message}`);
-            },
-            async () => {
-              imageUrl = await getDownloadURL(uploadTask.snapshot.ref);
-              console.log('File available at', imageUrl);
-            }
-          );
-
-          await new Promise((resolve, reject) => {
             uploadTask.on('state_changed',
-              null,
-              (error) => reject(error),
-              () => resolve(true)
+              (snapshot) => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                setUploadProgress(progress);
+              },
+              (error) => {
+                console.error("Upload error:", error);
+                reject(new Error(`File upload failed: ${error.message}`));
+              },
+              async () => {
+                try {
+                  const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                  console.log('File available at', downloadURL);
+                  resolve(downloadURL);
+                } catch (error) {
+                  reject(error);
+                }
+              }
             );
           });
+
+          if (!imageUrl) {
+            throw new Error("Failed to get image URL after upload");
+          }
         } catch (uploadError) {
           console.error("Detailed upload error:", uploadError);
           throw new Error(`File upload failed: ${(uploadError as Error).message}`);
@@ -150,7 +195,7 @@ export default function Dashboard() {
         productId,
         title,
         description,
-        imageUrl, // Store image URL here
+        imageUrl,
         qrCode: qrCodeData,
         userEmail: currentUser.email,
         userId: currentUser.uid,
@@ -269,6 +314,63 @@ export default function Dashboard() {
                 {isLoading ? 'Uploading...' : 'Upload Product'}
               </button>
             </form>
+          </div>
+
+          <div className="mt-12">
+            <h2 className="text-2xl font-semibold mb-6">Your Products</h2>
+            {isLoadingProducts ? (
+              <div className="text-center py-8">Loading your products...</div>
+            ) : userProducts.length === 0 ? (
+              <div className="text-center py-8 text-gray-400">
+                You haven't uploaded any products yet.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {userProducts.map((product) => (
+                  <div
+                    key={product.productId}
+                    className="bg-white/10 backdrop-blur-sm border border-white/10 rounded-lg shadow-lg overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                  >
+                    <div className="relative w-full h-48">
+                      <Image
+                        src={product.imageUrl}
+                        alt={product.title}
+                        fill
+                        className="object-cover"
+                        priority
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = "https://placehold.co/400x300/1e293b/ffffff?text=No+Image";
+                        }}
+                      />
+                    </div>
+                    <div className="p-4">
+                      <h3 className="text-xl font-semibold mb-2">{product.title}</h3>
+                      <p className="text-gray-300 mb-4 line-clamp-2">{product.description}</p>
+                      <div className="flex justify-between items-center">
+                        <Link
+                          href={`/products/${product.productId}`}
+                          className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                        >
+                          View Details
+                        </Link>
+                        <div className="relative w-12 h-12">
+                          <Image
+                            src={product.qrCode}
+                            alt="Product QR Code"
+                            fill
+                            className="object-contain"
+                          />
+                        </div>
+                      </div>
+                      <p className="text-sm text-gray-400 mt-2">
+                        Uploaded on {product.createdAt.toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

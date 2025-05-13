@@ -142,9 +142,9 @@ export default function Home() {
     <p className="text-xl mb-6 tracking-wide leading-relaxed animate-fadeInDelay2">
       Find the Genuine car parts at unbeatable prices!
     </p>
-    <button className="bg-blue-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 hover:scale-105 transition-transform duration-200 animate-fadeInDelay3">
+    <Link href="/products" className="bg-blue-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 hover:scale-105 transition-transform duration-200 animate-fadeInDelay3">
       Shop Now
-    </button>
+    </Link>
 
     <Link
   href="/register"

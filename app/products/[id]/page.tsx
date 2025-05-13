@@ -35,7 +35,7 @@ export default function ProductDetailPage() {
           
           setProduct({
             productId: productSnapshot.id,
-            imageUrl: data.imageUrl || "/default-image.png", // Provide fallback if missing
+            imageUrl: data.imageUrl || "https://placehold.co/400x300/1e293b/ffffff?text=No+Image",
             title: data.title || "Untitled",
             description: data.description || "No description available.",
           });
@@ -52,36 +52,37 @@ export default function ProductDetailPage() {
     fetchProduct();
   }, [id]); // Dependency array ensures effect runs when `id` changes
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-[#0b0f1a] text-white">Loading...</div>;
 
-  if (!product) return <div>Product not found</div>;
+  if (!product) return <div className="min-h-screen flex items-center justify-center bg-[#0b0f1a] text-white">Product not found</div>;
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-        <div className="relative w-full h-[400px]">
-          {imageError ? (
-            <div className="w-full h-full flex items-center justify-center bg-gray-100">
-              <p className="text-gray-500">Failed to load image</p>
-            </div>
-          ) : (
-            <Image
-              src={product.imageUrl}
-              alt={product.title}
-              fill
-              className="object-cover"
-              priority
-              onError={() => {
-                console.error("Image failed to load:", product.imageUrl);
-                setImageError(true);
-              }}
-            />
-          )}
-        </div>
-        <div className="p-6">
-          <h1 className="text-3xl font-bold mb-4">{product.title}</h1>
-          <p className="text-gray-600">{product.description}</p>
-          <p className="text-sm text-gray-500 mt-2">Image URL: {product.imageUrl}</p>
+    <div className="min-h-screen bg-[#0b0f1a] py-8 px-4">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white/10 backdrop-blur-sm border border-white/10 rounded-lg shadow-lg overflow-hidden">
+          <div className="relative w-full h-[400px]">
+            {imageError ? (
+              <div className="w-full h-full flex items-center justify-center bg-gray-800">
+                <p className="text-gray-400">Failed to load image</p>
+              </div>
+            ) : (
+              <Image
+                src={product.imageUrl}
+                alt={product.title}
+                fill
+                className="object-cover"
+                priority
+                onError={() => {
+                  console.error("Image failed to load:", product.imageUrl);
+                  setImageError(true);
+                }}
+              />
+            )}
+          </div>
+          <div className="p-6">
+            <h1 className="text-3xl font-bold mb-4 text-white">{product.title}</h1>
+            <p className="text-gray-300">{product.description}</p>
+          </div>
         </div>
       </div>
     </div>
