@@ -322,7 +322,7 @@ export default function Dashboard() {
               <div className="text-center py-8">Loading your products...</div>
             ) : userProducts.length === 0 ? (
               <div className="text-center py-8 text-gray-400">
-                You haven't uploaded any products yet.
+               <p> You haven't uploaded any products yet.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
