@@ -319,7 +319,7 @@ export default function Dashboard() {
           <div className="mt-12">
             <h2 className="text-2xl font-semibold mb-6">Your Products</h2>
             {isLoadingProducts ? (
-              <div className="text-center py-8">Loading your products...</div>
+              <div className="text-center py-8">{`Loading your products...`}</div>
             ) : userProducts.length === 0 ? (
               <div className="text-center py-8 text-gray-400">
                <p> You have not uploaded any products yet</p>
