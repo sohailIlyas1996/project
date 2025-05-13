@@ -16,7 +16,9 @@ interface User {
   fullName: string;
   email: string;
   approved: boolean;
-  createdAt?: any;
+  createdAt?: {
+    toDate: () => Date;
+  };
 }
 
 export default function Dashboard() {

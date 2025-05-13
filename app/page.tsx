@@ -45,9 +45,6 @@ const products = [
 export default function Home() {
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const handleMenuItemClick = () => {
-    setIsMobileMenuOpen(false);
-  };
   return (
     <div className="min-h-screen bg-black text-gray-200 font-sans">
     {/* Navbar */}

@@ -86,8 +86,9 @@ if (!isApproved) {
 
       // // Redirect to another page (e.g., dashboard)
       // router.push("/"); // Or any route you want to navigate to after login
-    } catch (err: any) {
-      setError("Login failed: " + err.message); // Handle error
+    } catch (err: Error | unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+      setError("Login failed: " + errorMessage);
     }
 
     // Clear the input fields after submission
