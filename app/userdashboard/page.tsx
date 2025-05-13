@@ -348,12 +348,7 @@ export default function Dashboard() {
                       <h3 className="text-xl font-semibold mb-2">{product.title}</h3>
                       <p className="text-gray-300 mb-4 line-clamp-2">{product.description}</p>
                       <div className="flex justify-between items-center">
-                        <Link
-                          href={`/products/${product.productId}`}
-                          className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-                        >
-                          View Details
-                        </Link>
+                     
                         <div className="relative w-12 h-12">
                           <Image
                             src={product.qrCode}
