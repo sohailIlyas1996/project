@@ -1,6 +1,5 @@
 // app/products/[id]/page.tsx
 "use client";   
-import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
@@ -11,18 +10,17 @@ import { ShoppingCart } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Navigation from '@/app/components/Navigation';
 
-export default function ProductDetail() {
+export default function ProductDetail({ params }: { params: { id: string } }) {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedImage, setSelectedImage] = useState('');
-  const params = useParams();
   const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const productId = params.id as string;
+        const productId = params.id;
         const productDoc = await getDoc(doc(db, 'products', productId));
         
         if (productDoc.exists()) {

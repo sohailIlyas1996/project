@@ -4,20 +4,18 @@ import { useEffect, useState } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/app/lib/firebase';
 import Image from 'next/image';
-import { useParams } from 'next/navigation';
 import { Product } from '@/app/types';
 import Link from 'next/link';
 
-export default function ScanPage() {
+export default function ScanPage({ params }: { params: { id: string } }) {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const params = useParams();
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const productId = params.id as string;
+        const productId = params.id;
         const productDoc = await getDoc(doc(db, 'products', productId));
         
         if (productDoc.exists()) {
