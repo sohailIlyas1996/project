@@ -6,6 +6,10 @@ export default function PaymentSuccessPage({
 }: {
   searchParams: { status?: string };
 }) {
+  // Ensure status is passed as a string
+  const status = searchParams.status || '';
+  console.log('Page status:', status); // Debug log
+
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-[#0b0f1a] text-white p-6">
@@ -14,7 +18,7 @@ export default function PaymentSuccessPage({
         </div>
       </div>
     }>
-      <PaymentSuccessClient status={searchParams.status} />
+      <PaymentSuccessClient status={status} />
     </Suspense>
   );
 }

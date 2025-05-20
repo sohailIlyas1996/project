@@ -6,7 +6,7 @@ import { CheckCircle, XCircle } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 
 interface PaymentSuccessClientProps {
-  status?: string;
+  status: string;
 }
 
 export default function PaymentSuccessClient({ status }: PaymentSuccessClientProps) {
@@ -14,13 +14,22 @@ export default function PaymentSuccessClient({ status }: PaymentSuccessClientPro
   const hasClearedCart = useRef(false);
 
   useEffect(() => {
+    console.log('Client status:', status); // Debug log
     if (status === 'succeeded' && !hasClearedCart.current) {
+      console.log('Clearing cart...'); // Debug log
       clearCart();
       hasClearedCart.current = true;
     }
   }, [status, clearCart]);
 
-  if (status === 'succeeded') {
+  // Debug log
+  console.log('Rendering with status:', status);
+
+  // More explicit status check
+  const isSuccess = status === 'succeeded';
+  console.log('Is success:', isSuccess); // Debug log
+
+  if (isSuccess) {
     return (
       <div className="min-h-screen bg-[#0b0f1a] text-white p-6">
         <div className="max-w-md mx-auto text-center">

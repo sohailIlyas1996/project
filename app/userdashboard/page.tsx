@@ -85,8 +85,8 @@ export default function Dashboard() {
 
   const generateQRCode = async (productId: string) => {
     try {
-      // Generate QR code with the scan URL
-      const scanUrl = `${window.location.origin}/scan/${productId}`;
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://geniun-sohaililyas1996s-projects.vercel.app';
+      const scanUrl = `${baseUrl}/products/${productId}`;
       const qrCodeDataUrl = await QRCode.toDataURL(scanUrl);
       return qrCodeDataUrl;
     } catch (error) {
