@@ -2,12 +2,14 @@ import { Suspense } from 'react';
 import PaymentSuccessClient from './PaymentSuccessClient';
 import { Metadata } from 'next';
 
-type SearchParams = Promise<{
+// Define the expected params structure
+type Params = {
   status?: string;
-}>;
+};
 
+// Define the props type with Promise-based params
 type PageProps = {
-  searchParams: SearchParams;
+  searchParams: Promise<Params>;
 };
 
 export const metadata: Metadata = {
