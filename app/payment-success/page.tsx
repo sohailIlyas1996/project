@@ -1,18 +1,14 @@
 'use client';
 
-import { Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
 import { useCart } from '@/app/context/CartContext';
 import Link from 'next/link';
 import { CheckCircle, XCircle } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 
-// Create a component that uses useSearchParams
-function PaymentSuccessContent() {
-  const searchParams = useSearchParams();
+export default function PaymentSuccess({ searchParams }: { searchParams: { status?: string } }) {
   const { clearCart } = useCart();
   const hasClearedCart = useRef(false);
-  const status = searchParams.get('status');
+  const status = searchParams?.status;
 
   useEffect(() => {
     if (status === 'succeeded' && !hasClearedCart.current) {
@@ -61,14 +57,5 @@ function PaymentSuccessContent() {
         </Link>
       </div>
     </div>
-  );
-}
-
-// Wrap the component with Suspense
-export default function PaymentSuccess() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <PaymentSuccessContent />
-    </Suspense>
   );
 }
