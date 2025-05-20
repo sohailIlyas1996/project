@@ -2,14 +2,12 @@ import { Suspense } from 'react';
 import PaymentSuccessClient from './PaymentSuccessClient';
 import { Metadata } from 'next';
 
-// Define the expected params structure
-type Params = {
-  status?: string;
-};
+// Define the params type as a Promise
+type Params = Promise<{ status?: string }>;
 
-// Define the props type with Promise-based params
+// Define the props type with the Promise-based params
 type PageProps = {
-  searchParams: Promise<Params>;
+  searchParams: Params;
 };
 
 export const metadata: Metadata = {
@@ -17,9 +15,9 @@ export const metadata: Metadata = {
   description: 'Payment success page',
 };
 
-export default async function PaymentSuccessPage({ searchParams }: PageProps) {
+export default async function PaymentSuccessPage(props: PageProps) {
   // Await the searchParams promise
-  const params = await searchParams;
+  const params = await props.searchParams;
   const status = params.status || '';
   console.log('Page status:', status); // Debug log
 
