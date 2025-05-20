@@ -2,13 +2,12 @@ import { Suspense } from 'react';
 import PaymentSuccessClient from './PaymentSuccessClient';
 import { Metadata } from 'next';
 
+type SearchParams = Promise<{
+  status?: string;
+}>;
+
 type PageProps = {
-  params: {
-    [key: string]: string;
-  };
-  searchParams: {
-    [key: string]: string | string[] | undefined;
-  };
+  searchParams: SearchParams;
 };
 
 export const metadata: Metadata = {
@@ -16,9 +15,10 @@ export const metadata: Metadata = {
   description: 'Payment success page',
 };
 
-export default function PaymentSuccessPage({ searchParams }: PageProps) {
-  // Ensure status is passed as a string
-  const status = typeof searchParams.status === 'string' ? searchParams.status : '';
+export default async function PaymentSuccessPage({ searchParams }: PageProps) {
+  // Await the searchParams promise
+  const params = await searchParams;
+  const status = params.status || '';
   console.log('Page status:', status); // Debug log
 
   return (
