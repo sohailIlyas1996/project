@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import PaymentSuccessClient from '@/app/payment-success/PaymentSuccessClient';
+import PaymentSuccessClient from './PaymentSuccessClient';
 
 export default function PaymentSuccessPage({
   searchParams,
