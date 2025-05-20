@@ -1,24 +1,28 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useCart } from '@/app/context/CartContext';
 import Link from 'next/link';
 import { CheckCircle, XCircle } from 'lucide-react';
 
 export default function PaymentSuccess() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { clearCart } = useCart();
-  const status = searchParams.get('status');
   const hasClearedCart = useRef(false);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get('status');
+
     if (status === 'succeeded' && !hasClearedCart.current) {
       clearCart();
       hasClearedCart.current = true;
     }
-  }, [status, clearCart]);
+  }, [clearCart]);
+
+  const params = new URLSearchParams(window.location.search);
+  const status = params.get('status');
 
   if (status === 'succeeded') {
     return (
