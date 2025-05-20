@@ -1,29 +1,26 @@
-"use client";
+'use client';
 
-import { useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { useCart } from "@/app/context/CartContext";
-import Link from "next/link";
-import { CheckCircle, XCircle } from "lucide-react";
+import { useEffect, useRef } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useCart } from '@/app/context/CartContext';
+import Link from 'next/link';
+import { CheckCircle, XCircle } from 'lucide-react';
 
-export default function PaymentSuccess({
-  searchParams,
-}: {
-  searchParams: { status?: string };
-}) {
+export default function PaymentSuccess() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { clearCart } = useCart();
-  const status = searchParams?.status;
+  const status = searchParams.get('status');
   const hasClearedCart = useRef(false);
 
   useEffect(() => {
-    if (status === "succeeded" && !hasClearedCart.current) {
+    if (status === 'succeeded' && !hasClearedCart.current) {
       clearCart();
       hasClearedCart.current = true;
     }
   }, [status, clearCart]);
 
-  if (status === "succeeded") {
+  if (status === 'succeeded') {
     return (
       <div className="min-h-screen bg-[#0b0f1a] text-white p-6">
         <div className="max-w-md mx-auto text-center">
@@ -64,4 +61,4 @@ export default function PaymentSuccess({
       </div>
     </div>
   );
-} 
+}
