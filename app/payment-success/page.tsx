@@ -1,26 +1,29 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useCart } from '@/app/context/CartContext';
-import Link from 'next/link';
-import { CheckCircle, XCircle } from 'lucide-react';
+import { useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { useCart } from "@/app/context/CartContext";
+import Link from "next/link";
+import { CheckCircle, XCircle } from "lucide-react";
 
-function PaymentSuccessContent() {
+export default function PaymentSuccess({
+  searchParams,
+}: {
+  searchParams: { status?: string };
+}) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { clearCart } = useCart();
-  const status = searchParams.get('status');
+  const status = searchParams?.status;
   const hasClearedCart = useRef(false);
 
   useEffect(() => {
-    if (status === 'succeeded' && !hasClearedCart.current) {
+    if (status === "succeeded" && !hasClearedCart.current) {
       clearCart();
       hasClearedCart.current = true;
     }
-  }, [status]);
+  }, [status, clearCart]);
 
-  if (status === 'succeeded') {
+  if (status === "succeeded") {
     return (
       <div className="min-h-screen bg-[#0b0f1a] text-white p-6">
         <div className="max-w-md mx-auto text-center">
@@ -60,24 +63,5 @@ function PaymentSuccessContent() {
         </Link>
       </div>
     </div>
-  );
-}
-
-function LoadingState() {
-  return (
-    <div className="min-h-screen bg-[#0b0f1a] text-white p-6">
-      <div className="max-w-md mx-auto text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-        <p className="mt-4 text-lg">Loading...</p>
-      </div>
-    </div>
-  );
-}
-
-export default function PaymentSuccess() {
-  return (
-    <Suspense fallback={<LoadingState />}>
-      <PaymentSuccessContent />
-    </Suspense>
   );
 } 
