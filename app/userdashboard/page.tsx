@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { auth, db, storage } from "@/lib/firebase";
-import { doc, getDoc, addDoc, collection, getDocs, query, where } from "firebase/firestore";
+import { doc, getDoc, addDoc, collection, getDocs, query, where, setDoc } from "firebase/firestore";
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { useRouter } from "next/navigation";
@@ -85,6 +85,7 @@ export default function Dashboard() {
 
   const generateQRCode = async (productId: string) => {
     try {
+      // Always use the production URL
       const baseUrl = 'https://geniun.vercel.app';
       const scanUrl = `${baseUrl}/products/${productId}`;
       console.log('Generated QR Code URL:', scanUrl);
@@ -129,9 +130,6 @@ export default function Dashboard() {
       if (!currentUser) {
         throw new Error("You must be logged in to upload files");
       }
-
-      const productId = uuidv4();
-      const qrCodeData = await generateQRCode(productId);
 
       let imageUrl = "";
       if (imageFile) {
@@ -191,6 +189,15 @@ export default function Dashboard() {
         }
       }
 
+      // First, create the document to get its ID
+      const productRef = doc(collection(db, "products"));
+      const productId = productRef.id;
+      console.log('Firebase Document ID:', productId);
+
+      // Generate QR code with the Firebase document ID
+      const qrCodeData = await generateQRCode(productId);
+      console.log('QR Code generated for Document ID:', productId);
+
       const productData = {
         productId,
         title,
@@ -202,8 +209,9 @@ export default function Dashboard() {
         createdAt: new Date(),
       };
 
-      await addDoc(collection(db, "products"), productData);
-      console.log("Product data stored successfully");
+      // Save the product data using the same document reference
+      await setDoc(productRef, productData);
+      console.log("Product data stored successfully with Document ID:", productId);
 
       setMessage("Product uploaded successfully!");
       setTitle("");

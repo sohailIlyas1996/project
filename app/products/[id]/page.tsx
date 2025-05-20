@@ -3,14 +3,15 @@
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
-import Image from "next/image";
 import { Product } from '@/app/types';
 import { useCart } from '@/app/context/CartContext';
 import { ShoppingCart } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Navigation from '@/app/components/Navigation';
+import { useParams } from 'next/navigation';
 
-export default function ProductDetail({ params }: { params: { id: string } }) {
+export default function ProductDetail() {
+  const params = useParams();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -20,7 +21,7 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const productId = params.id;
+        const productId = params.id as string;
         const productDoc = await getDoc(doc(db, 'products', productId));
         
         if (productDoc.exists()) {
@@ -45,7 +46,9 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
       }
     };
 
-    fetchProduct();
+    if (params.id) {
+      fetchProduct();
+    }
   }, [params.id]);
 
   const handleAddToCart = () => {
@@ -84,19 +87,15 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
   return (
     <div className="min-h-screen bg-[#0b0f1a] text-white">
       <Navigation />
-      {/* Breadcrumb */}
-     
-
       <div className="max-w-7xl mx-auto p-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column - Product Images */}
           <div className="space-y-4">
             <div className="relative aspect-square rounded-lg overflow-hidden bg-white/5">
-              <Image
+              <img
                 src={selectedImage}
                 alt={product.title}
-                fill
-                className="object-contain"
+                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.src = "https://placehold.co/400x300/1e293b/ffffff?text=No+Image";
@@ -108,11 +107,10 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
                 onClick={() => setSelectedImage(product.imageUrl)}
                 className="relative aspect-square rounded-md overflow-hidden border-2 border-blue-500"
               >
-                <Image
+                <img
                   src={product.imageUrl}
                   alt="Main product image"
-                  fill
-                  className="object-cover"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
               </button>
               {product.qrCode && (
@@ -120,11 +118,10 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
                   onClick={() => setSelectedImage(product.qrCode || '')}
                   className="relative aspect-square rounded-md overflow-hidden border border-white/10"
                 >
-                  <Image
+                  <img
                     src={product.qrCode}
                     alt="Product QR code"
-                    fill
-                    className="object-contain bg-white"
+                    style={{ width: '100%', height: '100%', objectFit: 'contain', backgroundColor: 'white' }}
                   />
                 </button>
               )}

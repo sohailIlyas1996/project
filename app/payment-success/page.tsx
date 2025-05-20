@@ -1,15 +1,13 @@
 import { Suspense } from 'react';
 import PaymentSuccessClient from './PaymentSuccessClient';
 
-interface PageProps {
-  searchParams: {
-    status?: string;
-  };
+type Props = {
+  searchParams: { [key: string]: string | string[] | undefined }
 }
 
-export default function PaymentSuccessPage({ searchParams }: PageProps) {
+export default function PaymentSuccessPage({ searchParams }: Props) {
   // Ensure status is passed as a string
-  const status = searchParams.status || '';
+  const status = typeof searchParams.status === 'string' ? searchParams.status : '';
   console.log('Page status:', status); // Debug log
 
   return (
