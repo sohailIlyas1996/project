@@ -1,11 +1,20 @@
 import { Suspense } from 'react';
 import PaymentSuccessClient from './PaymentSuccessClient';
+import { Metadata } from 'next';
 
-type Props = {
-  searchParams: { [key: string]: string | string[] | undefined }
+interface PageProps {
+  params: { [key: string]: string | string[] | undefined };
+  searchParams: { [key: string]: string | string[] | undefined };
 }
 
-export default function PaymentSuccessPage({ searchParams }: Props) {
+export const metadata: Metadata = {
+  title: 'Payment Success',
+  description: 'Payment success page',
+};
+
+export default function PaymentSuccessPage({
+  searchParams,
+}: PageProps) {
   // Ensure status is passed as a string
   const status = typeof searchParams.status === 'string' ? searchParams.status : '';
   console.log('Page status:', status); // Debug log
