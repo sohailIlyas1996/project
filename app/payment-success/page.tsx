@@ -1,13 +1,11 @@
 import { Suspense } from 'react';
 import PaymentSuccessClient from '@/app/payment-success/PaymentSuccessClient';
-import { useSearchParams } from 'next/navigation';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars   
-export default function PaymentSuccessPage() {
-  const searchParams = useSearchParams();
-  const status = searchParams.get('status') ?? undefined;
-  console.log(status);
-
+export default function PaymentSuccessPage({
+  searchParams,
+}: {
+  searchParams: { status?: string };
+}) {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-[#0b0f1a] text-white p-6">
@@ -16,7 +14,7 @@ export default function PaymentSuccessPage() {
         </div>
       </div>
     }>
-      <PaymentSuccessClient status={status} />
+      <PaymentSuccessClient status={searchParams.status} />
     </Suspense>
   );
 }
