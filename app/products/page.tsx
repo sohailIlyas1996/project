@@ -6,6 +6,9 @@ import { collection, getDocs } from "firebase/firestore";
 import Link from "next/link";
 import Image from "next/image";
 import { HomeIcon, InfoIcon, ShoppingCartIcon } from "lucide-react";
+import { useCart } from "@/app/context/CartContext";
+import { CartProduct } from "@/app/types";
+import toast from 'react-hot-toast';
 
 interface Product {
   productId: string;
@@ -19,6 +22,7 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { addToCart, cart } = useCart();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -89,9 +93,18 @@ export default function ProductsPage() {
               </Link>
             </li>
             <li className="flex items-center gap-1 hover:text-blue-400 cursor-pointer text-lg font-medium">
-              <Link href="/cart" className="flex items-center gap-1">
-                <ShoppingCartIcon className="w-5 h-5" />
-                Cart
+              <Link href="/cart" className="flex items-center gap-1 relative group">
+                {cart.length > 0 ? (
+                  <>
+                    <ShoppingCartIcon className="w-6 h-6 text-green-500" />
+                    <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      {cart.length}
+                    </span>
+                  </>
+                ) : (
+                  <ShoppingCartIcon className="w-6 h-6 text-gray-400" />
+                )}
+                <span className="group-hover:text-blue-400 transition-colors">Cart</span>
               </Link>
             </li>
           </ul>
@@ -139,9 +152,18 @@ export default function ProductsPage() {
             </Link>
           </li>
           <li className="flex items-center gap-1 hover:text-blue-400 cursor-pointer text-lg font-medium">
-            <Link href="/cart" className="flex items-center gap-1">
-              <ShoppingCartIcon className="w-5 h-5" />
-              Cart
+            <Link href="/cart" className="flex items-center gap-1 relative group">
+              {cart.length > 0 ? (
+                <>
+                  <ShoppingCartIcon className="w-6 h-6 text-green-500" />
+                  <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {cart.length}
+                  </span>
+                </>
+              ) : (
+                <ShoppingCartIcon className="w-6 h-6 text-gray-400" />
+              )}
+              <span className="group-hover:text-blue-400 transition-colors">Cart</span>
             </Link>
           </li>
         </ul>
@@ -192,8 +214,22 @@ export default function ProductsPage() {
                     <button 
                       className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
                       onClick={() => {
-                        // Add to cart functionality will be implemented later
-                        alert('Added to cart!');
+                        const cartProduct: CartProduct = {
+                          productId: product.productId,
+                          imageUrl: product.imageUrl,
+                          title: product.title,
+                          description: product.description
+                        };
+                        addToCart(cartProduct);
+                        toast.success(`${product.title} added to cart!`, {
+                          duration: 2000,
+                          position: 'bottom-right',
+                          style: {
+                            background: '#1e293b',
+                            color: '#fff',
+                            border: '1px solid #3b82f6'
+                          }
+                        });
                       }}
                     >
                       Add to Cart

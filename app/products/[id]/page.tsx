@@ -5,83 +5,163 @@ import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import Image from "next/image";
+import { Product } from '@/app/types';
+import { useCart } from '@/app/context/CartContext';
+import { ShoppingCart } from 'lucide-react';
+import toast from 'react-hot-toast';
+import Navigation from '@/app/components/Navigation';
 
-interface Product {
-  productId: string;
-  imageUrl: string;
-  title: string;
-  description: string;
-}
-
-export default function ProductDetailPage() {
+export default function ProductDetail() {
   const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [imageError, setImageError] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [selectedImage, setSelectedImage] = useState('');
   const params = useParams();
-  const id = params.id as string;
+  const { addToCart } = useCart();
 
-  // Check if the id exists before attempting to fetch the product
   useEffect(() => {
-    if (!id) return; // If `id` is not available, skip the fetch
-
     const fetchProduct = async () => {
       try {
-        const productRef = doc(db, "products", id as string);
-        const productSnapshot = await getDoc(productRef);
-        if (productSnapshot.exists()) {
-          const data = productSnapshot.data();
-          console.log("Product data:", data); // Log the entire product data
-          console.log("Image URL:", data.imageUrl); // Log specifically the image URL
-          
-          setProduct({
-            productId: productSnapshot.id,
-            imageUrl: data.imageUrl || "https://placehold.co/400x300/1e293b/ffffff?text=No+Image",
-            title: data.title || "Untitled",
-            description: data.description || "No description available.",
-          });
+        const productId = params.id as string;
+        const productDoc = await getDoc(doc(db, 'products', productId));
+        
+        if (productDoc.exists()) {
+          const productData = productDoc.data();
+          const product = {
+            productId: productDoc.id,
+            title: productData.title,
+            description: productData.description,
+            imageUrl: productData.imageUrl,
+            qrCode: productData.qrCode
+          };
+          setProduct(product);
+          setSelectedImage(product.imageUrl || "https://placehold.co/400x300/1e293b/ffffff?text=No+Image");
         } else {
-          setProduct(null); // If no product found, set null
+          setError('Product not found');
         }
-      } catch (error) {
-        console.error("Error fetching product:", error);
+      } catch (err) {
+        setError('Error loading product');
+        console.error('Error fetching product:', err);
       } finally {
         setLoading(false);
       }
     };
 
     fetchProduct();
-  }, [id]); // Dependency array ensures effect runs when `id` changes
+  }, [params.id]);
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center bg-[#0b0f1a] text-white">Loading...</div>;
+  const handleAddToCart = () => {
+    if (product) {
+      addToCart(product);
+      toast.success('Added to cart!');
+    }
+  };
 
-  if (!product) return <div className="min-h-screen flex items-center justify-center bg-[#0b0f1a] text-white">Product not found</div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0b0f1a] text-white">
+        <Navigation />
+        <div className="p-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !product) {
+    return (
+      <div className="min-h-screen bg-[#0b0f1a] text-white">
+        <Navigation />
+        <div className="p-6">
+          <div className="max-w-7xl mx-auto">
+            <h1 className="text-2xl font-bold text-red-500">{error || 'Product not found'}</h1>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-[#0b0f1a] py-8 px-4">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white/10 backdrop-blur-sm border border-white/10 rounded-lg shadow-lg overflow-hidden">
-          <div className="relative w-full h-[400px]">
-            {imageError ? (
-              <div className="w-full h-full flex items-center justify-center bg-gray-800">
-                <p className="text-gray-400">Failed to load image</p>
-              </div>
-            ) : (
+    <div className="min-h-screen bg-[#0b0f1a] text-white">
+      <Navigation />
+      {/* Breadcrumb */}
+     
+
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Left Column - Product Images */}
+          <div className="space-y-4">
+            <div className="relative aspect-square rounded-lg overflow-hidden bg-white/5">
               <Image
-                src={product.imageUrl}
+                src={selectedImage}
                 alt={product.title}
                 fill
-                className="object-cover"
-                priority
-                onError={() => {
-                  console.error("Image failed to load:", product.imageUrl);
-                  setImageError(true);
+                className="object-contain"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = "https://placehold.co/400x300/1e293b/ffffff?text=No+Image";
                 }}
               />
-            )}
+            </div>
+            <div className="grid grid-cols-4 gap-2">
+              <button
+                onClick={() => setSelectedImage(product.imageUrl)}
+                className="relative aspect-square rounded-md overflow-hidden border-2 border-blue-500"
+              >
+                <Image
+                  src={product.imageUrl}
+                  alt="Main product image"
+                  fill
+                  className="object-cover"
+                />
+              </button>
+              {product.qrCode && (
+                <button
+                  onClick={() => setSelectedImage(product.qrCode || '')}
+                  className="relative aspect-square rounded-md overflow-hidden border border-white/10"
+                >
+                  <Image
+                    src={product.qrCode}
+                    alt="Product QR code"
+                    fill
+                    className="object-contain bg-white"
+                  />
+                </button>
+              )}
+            </div>
           </div>
-          <div className="p-6">
-            <h1 className="text-3xl font-bold mb-4 text-white">{product.title}</h1>
-            <p className="text-gray-300">{product.description}</p>
+
+          {/* Right Column - Product Info */}
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold mb-2">{product.title}</h1>
+            </div>
+
+            <div className="bg-white/5 rounded-lg p-4">
+              <div className="text-2xl font-bold text-green-400">$99.99</div>
+              <div className="text-sm text-gray-400">In Stock</div>
+            </div>
+
+            <div className="space-y-4">
+              <button
+                onClick={handleAddToCart}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition"
+              >
+                <ShoppingCart className="w-5 h-5" />
+                Add to Cart
+              </button>
+            </div>
+
+            {/* Product Description */}
+            <div className="border-t border-white/10 pt-6">
+              <div className="bg-white/5 rounded-lg p-6">
+                <div className="prose prose-invert max-w-none">
+                  <p>{product.description}</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

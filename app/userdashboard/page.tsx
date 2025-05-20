@@ -12,7 +12,7 @@ import { v4 as uuidv4 } from "uuid";
 import Image from "next/image";
 import Link from "next/link";
 
-interface Product {
+export interface Product {
   productId: string;
   title: string;
   description: string;
@@ -29,9 +29,9 @@ export default function Dashboard() {
   const [description, setDescription] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [message, setMessage] = useState("");
-  const [qrCode, setQrCode] = useState<string>("");
+  const [generatedProductQrCode, setGeneratedProductQrCode] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0); // To track upload progress
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [userProducts, setUserProducts] = useState<Product[]>([]);
   const [isLoadingProducts, setIsLoadingProducts] = useState(true);
   const router = useRouter();
@@ -85,12 +85,13 @@ export default function Dashboard() {
 
   const generateQRCode = async (productId: string) => {
     try {
-      const qrData = await QRCode.toDataURL(productId);
-      setQrCode(qrData);
-      return qrData;
-    } catch (err) {
-      console.error("Error generating QR code:", err);
-      throw err;
+      // Generate QR code with the scan URL
+      const scanUrl = `${window.location.origin}/scan/${productId}`;
+      const qrCodeDataUrl = await QRCode.toDataURL(scanUrl);
+      return qrCodeDataUrl;
+    } catch (error) {
+      console.error('Error generating QR code:', error);
+      throw error;
     }
   };
 
@@ -107,7 +108,6 @@ export default function Dashboard() {
         createdAt: doc.data().createdAt?.toDate(),
       })) as Product[];
       
-      // Sort products by creation date (newest first)
       products.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
       setUserProducts(products);
     } catch (error) {
@@ -157,7 +157,6 @@ export default function Dashboard() {
             cacheControl: 'public,max-age=31536000'
           };
 
-          // Create a new promise to handle the upload
           imageUrl = await new Promise((resolve, reject) => {
             const uploadTask = uploadBytesResumable(fileRef, imageFile, metadata);
 
@@ -209,7 +208,7 @@ export default function Dashboard() {
       setTitle("");
       setDescription("");
       setImageFile(null);
-      setQrCode("");
+      setGeneratedProductQrCode("");
     } catch (err) {
       console.error("Detailed error:", err);
       setMessage("Error uploading product: " + (err as Error).message);
@@ -277,12 +276,12 @@ export default function Dashboard() {
                 />
               </div>
 
-              {qrCode && (
+              {generatedProductQrCode && (
                 <div className="mt-4 p-4 bg-white/5 rounded-lg">
                   <h3 className="text-sm font-medium mb-2">Generated QR Code</h3>
                   <div className="relative w-32 h-32 mx-auto">
                     <Image
-                      src={qrCode}
+                      src={generatedProductQrCode}
                       alt="Product QR Code"
                       fill
                       className="object-contain"
@@ -347,8 +346,7 @@ export default function Dashboard() {
                     <div className="p-4">
                       <h3 className="text-xl font-semibold mb-2">{product.title}</h3>
                       <p className="text-gray-300 mb-4 line-clamp-2">{product.description}</p>
-                      <div className="flex justify-between items-center">
-                     
+                      <div className="flex justify-between items-center mb-3">
                         <div className="relative w-12 h-12">
                           <Image
                             src={product.qrCode}
