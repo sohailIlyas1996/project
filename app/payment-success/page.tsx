@@ -1,30 +1,25 @@
-'use client';
+"use client";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+import { useCart } from "@/app/context/CartContext";
+import Link from "next/link";
+import { CheckCircle, XCircle } from "lucide-react";
+import { useEffect, useRef } from "react";
 
-import { useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import { useCart } from '@/app/context/CartContext';
-import Link from 'next/link';
-import { CheckCircle, XCircle } from 'lucide-react';
-
-export default function PaymentSuccess() {
-  const router = useRouter();
+function PaymentSuccessContent() {
+  const searchParams = useSearchParams();
   const { clearCart } = useCart();
   const hasClearedCart = useRef(false);
+  const status = searchParams.get("status");
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const status = params.get('status');
-
-    if (status === 'succeeded' && !hasClearedCart.current) {
+    if (status === "succeeded" && !hasClearedCart.current) {
       clearCart();
       hasClearedCart.current = true;
     }
-  }, [clearCart]);
+  }, [status, clearCart]);
 
-  const params = new URLSearchParams(window.location.search);
-  const status = params.get('status');
-
-  if (status === 'succeeded') {
+  if (status === "succeeded") {
     return (
       <div className="min-h-screen bg-[#0b0f1a] text-white p-6">
         <div className="max-w-md mx-auto text-center">
@@ -64,5 +59,24 @@ export default function PaymentSuccess() {
         </Link>
       </div>
     </div>
+  );
+}
+
+function LoadingState() {
+  return (
+    <div className="min-h-screen bg-[#0b0f1a] text-white p-6">
+      <div className="max-w-md mx-auto text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+        <p className="mt-4 text-lg">Processing payment...</p>
+      </div>
+    </div>
+  );
+}
+
+export default function PaymentSuccess() {
+  return (
+    <Suspense fallback={<LoadingState />}>
+      <PaymentSuccessContent />
+    </Suspense>
   );
 }
