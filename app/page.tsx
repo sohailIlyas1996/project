@@ -10,48 +10,57 @@ const products = [
     name: "Tyre",
     price: "$49.99",
     stock: 12,
-    image: "https://images.unsplash.com/photo-1527266258038-6ae3e089a609?w=500&auto=format&fit=crop&q=60",
+    image:
+      "https://images.unsplash.com/photo-1527266258038-6ae3e089a609?w=500&auto=format&fit=crop&q=60",
   },
   {
     id: 2,
     name: "Brake Pad",
     price: "$89.99",
     stock: 5,
-    image: "https://images.unsplash.com/photo-1696494561430-de087dd0bd69?w=500&auto=format&fit=crop&q=60",
+    image:
+      "https://images.unsplash.com/photo-1696494561430-de087dd0bd69?w=500&auto=format&fit=crop&q=60",
   },
   {
     id: 3,
     name: "Oil",
     price: "$29.99",
     stock: 20,
-    image: "https://images.unsplash.com/photo-1590227763209-821c686b932f?w=500&auto=format&fit=crop&q=60"
+    image:
+      "https://images.unsplash.com/photo-1590227763209-821c686b932f?w=500&auto=format&fit=crop&q=60",
   },
   {
     id: 4,
     name: "Battery",
     price: "$249.99",
     stock: 8,
-    image: "https://plus.unsplash.com/premium_photo-1661770030805-0abb8fd880f1?w=500&auto=format&fit=crop&q=60"
+    image:
+      "https://plus.unsplash.com/premium_photo-1661770030805-0abb8fd880f1?w=500&auto=format&fit=crop&q=60",
   },
   {
     id: 5,
     name: "Air Filter",
     price: "$39.99",
     stock: 14,
-    image: "https://images.unsplash.com/photo-1588294020274-1e23a4815b72?w=500&auto=format&fit=crop&q=60"
+    image:
+      "https://images.unsplash.com/photo-1588294020274-1e23a4815b72?w=500&auto=format&fit=crop&q=60",
   },
 ];
 
 export default function Home() {
-
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   return (
     <div className="min-h-screen bg-black text-gray-200 font-sans">
-    {/* Navbar */}
-    <nav className="w-full px-6 py-4 flex items-center justify-between bg-[#0a0f1c] shadow-md text-gray-200">
-        <div className="text-3xl font-extrabold text-white">
-          🛍️ GenuineShield
-        </div>
+      {/* Navbar */}
+      <nav className="w-full px-6 py-4 flex items-center justify-between bg-[#0a0f1c] shadow-md text-gray-200">
+        <Image
+          src="/images/logo.png"
+          alt="logo for app"
+          width={50}
+          height={50}
+          className="rounded-full m-2"
+        />
+        <div className="text-3xl font-extrabold text-white">GenuineShield</div>
 
         {/* Search bar */}
         <div className="hidden md:flex items-center gap-6 ml-auto mr-5">
@@ -112,7 +121,9 @@ export default function Home() {
 
       {/* Mobile menu dropdown */}
       <div
-        className={`md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'} fixed top-0 left-0 w-full bg-[#0a0f1c] text-white shadow-lg z-50`}
+        className={`md:hidden ${
+          isMobileMenuOpen ? "block" : "hidden"
+        } fixed top-0 left-0 w-full bg-[#0a0f1c] text-white shadow-lg z-50`}
       >
         <ul className="flex flex-col items-center gap-6 py-4">
           <li className="flex items-center gap-1 hover:text-blue-400 cursor-pointer text-lg font-medium">
@@ -124,45 +135,41 @@ export default function Home() {
             About
           </li>
           <li className="flex items-center gap-1 hover:text-blue-400 cursor-pointer text-lg font-medium">
-            <LogInIcon className="w-5 h-5" />  
-            <Link href="/login">
-            Login
-            </Link>
+            <LogInIcon className="w-5 h-5" />
+            <Link href="/login">Login</Link>
           </li>
         </ul>
       </div>
 
+      <section className="relative w-full h-[80vh] flex items-center justify-center overflow-hidden text-white bg-[#1e293b]">
+        <div className="relative z-10 text-center px-6">
+          <h1 className="text-5xl font-extrabold mb-4 tracking-tight animate-fadeInDelay1">
+            Welcome to GenuineShield
+          </h1>
+          <p className="text-xl mb-6 tracking-wide leading-relaxed animate-fadeInDelay2">
+            Find the Genuine car parts at unbeatable prices!
+          </p>
+          <Link
+            href="/products"
+            className="bg-blue-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 hover:scale-105 transition-transform duration-200 animate-fadeInDelay3"
+          >
+            Shop Now
+          </Link>
 
- 
-<section className="relative w-full h-[80vh] flex items-center justify-center overflow-hidden text-white bg-[#1e293b]">
-  <div className="relative z-10 text-center px-6">
-    <h1 className="text-5xl font-extrabold mb-4 tracking-tight animate-fadeInDelay1">
-      Welcome to GenuineShield
-    </h1>
-    <p className="text-xl mb-6 tracking-wide leading-relaxed animate-fadeInDelay2">
-      Find the Genuine car parts at unbeatable prices!
-    </p>
-    <Link href="/products" className="bg-blue-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 hover:scale-105 transition-transform duration-200 animate-fadeInDelay3">
-      Shop Now
-    </Link>
-
-    <Link
-  href="/register"
-  className=" ml-5 inline-block bg-blue-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 hover:scale-105 transition-transform duration-200 animate-fadeInDelay3"
->
-  Register Your Company
-</Link>
-   
-  </div>
-</section>
-
-
-
-
+          <Link
+            href="/register"
+            className=" ml-5 inline-block bg-blue-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 hover:scale-105 transition-transform duration-200 animate-fadeInDelay3"
+          >
+            Register Your Company
+          </Link>
+        </div>
+      </section>
 
       {/* Products Section */}
       <section className="py-16 px-6">
-        <h2 className="text-4xl font-extrabold text-center mb-12 text-white">Featured Products</h2>
+        <h2 className="text-4xl font-extrabold text-center mb-12 text-white">
+          Featured Products
+        </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
           {products.map((product) => (
             <div
@@ -178,11 +185,12 @@ export default function Home() {
               />
               <div className="p-4">
                 <h3 className="text-xl font-semibold mb-2">{product.name}</h3>
-                <p className="text-blue-400 font-semibold text-lg">{product.price}</p>
-                <p className="text-sm text-gray-400">{product.stock} in stock</p>
-                <button className="mt-4 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
-                  Add to Cart
-                </button>
+                <p className="text-blue-400 font-semibold text-lg">
+                  {product.price}
+                </p>
+                <p className="text-sm text-gray-400">
+                  {product.stock} in stock
+                </p>
               </div>
             </div>
           ))}
@@ -219,7 +227,6 @@ export default function Home() {
           &copy; 2025 GenuineShield. All rights reserved.
         </div>
       </footer>
-
     </div>
   );
 }

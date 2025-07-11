@@ -8,7 +8,7 @@ import Image from "next/image";
 import { HomeIcon, InfoIcon, ShoppingCartIcon } from "lucide-react";
 import { useCart } from "@/app/context/CartContext";
 import { CartProduct } from "@/app/types";
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
 
 interface Product {
   productId: string;
@@ -49,22 +49,32 @@ export default function ProductsPage() {
     fetchProducts();
   }, []);
 
-  const filteredProducts = products.filter(product =>
-    product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.description.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredProducts = products.filter(
+    (product) =>
+      product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center bg-[#0b0f1a] text-white">Loading products...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#0b0f1a] text-white">
+        Loading products...
+      </div>
+    );
   }
 
   return (
     <div className="min-h-screen bg-[#0b0f1a]">
       {/* Navbar */}
       <nav className="w-full px-6 py-4 flex items-center justify-between bg-[#0a0f1c] shadow-md text-gray-200">
-        <div className="text-3xl font-extrabold text-white">
-          🛍️ GenuineShield
-        </div>
+        <Image
+          src="/images/logo.png"
+          alt="GenuineShield Logo"
+          width={50}
+          height={50}
+          className="rounded-full m-2"
+        />
+        <div className="text-3xl font-extrabold text-white">GenuineShield</div>
 
         {/* Search bar */}
         <div className="hidden md:flex items-center gap-6 ml-auto mr-5">
@@ -93,7 +103,10 @@ export default function ProductsPage() {
               </Link>
             </li>
             <li className="flex items-center gap-1 hover:text-blue-400 cursor-pointer text-lg font-medium">
-              <Link href="/cart" className="flex items-center gap-1 relative group">
+              <Link
+                href="/cart"
+                className="flex items-center gap-1 relative group"
+              >
                 {cart.length > 0 ? (
                   <>
                     <ShoppingCartIcon className="w-6 h-6 text-green-500" />
@@ -104,7 +117,9 @@ export default function ProductsPage() {
                 ) : (
                   <ShoppingCartIcon className="w-6 h-6 text-gray-400" />
                 )}
-                <span className="group-hover:text-blue-400 transition-colors">Cart</span>
+                <span className="group-hover:text-blue-400 transition-colors">
+                  Cart
+                </span>
               </Link>
             </li>
           </ul>
@@ -136,7 +151,9 @@ export default function ProductsPage() {
 
       {/* Mobile menu dropdown */}
       <div
-        className={`md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'} fixed top-16 left-0 w-full bg-[#0a0f1c] text-white shadow-lg z-50`}
+        className={`md:hidden ${
+          isMobileMenuOpen ? "block" : "hidden"
+        } fixed top-16 left-0 w-full bg-[#0a0f1c] text-white shadow-lg z-50`}
       >
         <ul className="flex flex-col items-center gap-6 py-4">
           <li className="flex items-center gap-1 hover:text-blue-400 cursor-pointer text-lg font-medium">
@@ -152,7 +169,10 @@ export default function ProductsPage() {
             </Link>
           </li>
           <li className="flex items-center gap-1 hover:text-blue-400 cursor-pointer text-lg font-medium">
-            <Link href="/cart" className="flex items-center gap-1 relative group">
+            <Link
+              href="/cart"
+              className="flex items-center gap-1 relative group"
+            >
               {cart.length > 0 ? (
                 <>
                   <ShoppingCartIcon className="w-6 h-6 text-green-500" />
@@ -163,7 +183,9 @@ export default function ProductsPage() {
               ) : (
                 <ShoppingCartIcon className="w-6 h-6 text-gray-400" />
               )}
-              <span className="group-hover:text-blue-400 transition-colors">Cart</span>
+              <span className="group-hover:text-blue-400 transition-colors">
+                Cart
+              </span>
             </Link>
           </li>
         </ul>
@@ -183,11 +205,16 @@ export default function ProductsPage() {
       {/* Products Section */}
       <div className="py-8 px-4">
         {filteredProducts.length === 0 ? (
-          <div className="text-center text-gray-400">No products found matching your search.</div>
+          <div className="text-center text-gray-400">
+            No products found matching your search.
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
             {filteredProducts.map((product) => (
-              <div key={product.productId} className="bg-white/10 backdrop-blur-sm border border-white/10 rounded-lg shadow-lg overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+              <div
+                key={product.productId}
+                className="bg-white/10 backdrop-blur-sm border border-white/10 rounded-lg shadow-lg overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              >
                 <div className="relative w-full h-48">
                   <Image
                     src={product.imageUrl}
@@ -197,38 +224,41 @@ export default function ProductsPage() {
                     priority
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
-                      target.src = "https://placehold.co/400x300/1e293b/ffffff?text=No+Image";
+                      target.src =
+                        "https://placehold.co/400x300/1e293b/ffffff?text=No+Image";
                     }}
                   />
                 </div>
                 <div className="p-4">
-                  <h2 className="text-xl font-semibold mb-2 text-white">{product.title}</h2>
+                  <h2 className="text-xl font-semibold mb-2 text-white">
+                    {product.title}
+                  </h2>
                   <p className="text-gray-300 mb-4">{product.description}</p>
                   <div className="flex justify-between items-center">
-                    <Link 
+                    <Link
                       href={`/products/${product.productId}`}
                       className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
                     >
                       View Details
                     </Link>
-                    <button 
+                    <button
                       className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
                       onClick={() => {
                         const cartProduct: CartProduct = {
                           productId: product.productId,
                           imageUrl: product.imageUrl,
                           title: product.title,
-                          description: product.description
+                          description: product.description,
                         };
                         addToCart(cartProduct);
                         toast.success(`${product.title} added to cart!`, {
                           duration: 2000,
-                          position: 'bottom-right',
+                          position: "bottom-right",
                           style: {
-                            background: '#1e293b',
-                            color: '#fff',
-                            border: '1px solid #3b82f6'
-                          }
+                            background: "#1e293b",
+                            color: "#fff",
+                            border: "1px solid #3b82f6",
+                          },
                         });
                       }}
                     >
