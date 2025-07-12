@@ -7,12 +7,12 @@ import Image from "next/image";
 import { Product } from "@/app/types";
 import Link from "next/link";
 
-type PageProps = {
+type ScanPageProps = {
   params: { id: string };
   searchParams?: { [key: string]: string | string[] };
 };
 
-export default function Page({ params }: PageProps) {
+export default function Page({ params }: ScanPageProps) {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
