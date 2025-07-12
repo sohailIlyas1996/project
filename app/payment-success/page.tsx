@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { use } from "react";
 import PaymentSuccessClient from "./PaymentSuccessClient";
 import { Metadata } from "next";
 
@@ -15,11 +16,9 @@ export const metadata: Metadata = {
   description: "Payment success page",
 };
 
-export default async function PaymentSuccessPage(
-  props: PaymentSuccessPageProps
-) {
-  // Await the searchParams promise
-  const params = await props.searchParams;
+export default function PaymentSuccessPage(props: PaymentSuccessPageProps) {
+  // Use the 'use' hook to unwrap the searchParams promise
+  const params = use(props.searchParams);
   const status = params.status || "";
   console.log("Page status:", status); // Debug log
 
