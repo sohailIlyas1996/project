@@ -7,7 +7,12 @@ import Image from "next/image";
 import { Product } from "@/app/types";
 import Link from "next/link";
 
-export default function Page({ params }: { params: { id: string } }) {
+type PageProps = {
+  params: { id: string };
+  searchParams?: { [key: string]: string | string[] };
+};
+
+export default function Page({ params }: PageProps) {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
