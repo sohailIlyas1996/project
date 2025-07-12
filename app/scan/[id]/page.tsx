@@ -1,23 +1,23 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '@/app/lib/firebase';
-import Image from 'next/image';
-import { Product } from '@/app/types';
-import Link from 'next/link';
+import { useEffect, useState } from "react";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/app/lib/firebase";
+import Image from "next/image";
+import { Product } from "@/app/types";
+import Link from "next/link";
 
-export default function ScanPage({ params }: { params: { id: string } }) {
+export default function Page({ params }: { params: { id: string } }) {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const productId = params.id;
-        const productDoc = await getDoc(doc(db, 'products', productId));
-        
+        const productDoc = await getDoc(doc(db, "products", productId));
+
         if (productDoc.exists()) {
           const productData = productDoc.data();
           setProduct({
@@ -25,14 +25,14 @@ export default function ScanPage({ params }: { params: { id: string } }) {
             title: productData.title,
             description: productData.description,
             imageUrl: productData.imageUrl,
-            qrCode: productData.qrCode
+            qrCode: productData.qrCode,
           });
         } else {
-          setError('Product not found');
+          setError("Product not found");
         }
       } catch (err) {
-        setError('Error loading product');
-        console.error('Error fetching product:', err);
+        setError("Error loading product");
+        console.error("Error fetching product:", err);
       } finally {
         setLoading(false);
       }
@@ -55,7 +55,9 @@ export default function ScanPage({ params }: { params: { id: string } }) {
     return (
       <div className="min-h-screen bg-[#0b0f1a] text-white p-6">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-2xl font-bold text-red-500">{error || 'Product not found'}</h1>
+          <h1 className="text-2xl font-bold text-red-500">
+            {error || "Product not found"}
+          </h1>
         </div>
       </div>
     );
@@ -74,7 +76,8 @@ export default function ScanPage({ params }: { params: { id: string } }) {
               className="object-cover"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
-                target.src = "https://placehold.co/400x300/1e293b/ffffff?text=No+Image";
+                target.src =
+                  "https://placehold.co/400x300/1e293b/ffffff?text=No+Image";
               }}
             />
           </div>
@@ -96,4 +99,4 @@ export default function ScanPage({ params }: { params: { id: string } }) {
       </div>
     </div>
   );
-} 
+}
