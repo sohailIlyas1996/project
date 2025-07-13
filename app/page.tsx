@@ -128,11 +128,11 @@ export default function Home() {
         <ul className="flex flex-col items-center gap-6 py-4">
           <li className="flex items-center gap-1 hover:text-blue-400 cursor-pointer text-lg font-medium">
             <HomeIcon className="w-5 h-5" />
-            Home
+            <Link href="/">Home</Link>
           </li>
           <li className="flex items-center gap-1 hover:text-blue-400 cursor-pointer text-lg font-medium">
             <InfoIcon className="w-5 h-5" />
-            About
+            <Link href="/about">About</Link>
           </li>
           <li className="flex items-center gap-1 hover:text-blue-400 cursor-pointer text-lg font-medium">
             <LogInIcon className="w-5 h-5" />
@@ -207,13 +207,20 @@ export default function Home() {
           <div>
             <h3 className="text-lg font-bold mb-4 text-white">Quick Links</h3>
             <ul className="space-y-2">
-              <li>Home</li>
-              <li>Products</li>
-              <li>Contact</li>
-              <li>Privacy Policy</li>
+              <Link href="/">
+                <li>Home</li>
+              </Link>
+
+              <Link href="/products">
+                <li>Products</li>
+              </Link>
+
+              <Link href={"/about"}>
+                <li> Contacs</li>
+              </Link>
             </ul>
           </div>
-          <div>
+          {/* <div>
             <h3 className="text-lg font-bold mb-4 text-white">Newsletter</h3>
             <p>Subscribe to get the latest updates and offers.</p>
             <input
@@ -221,7 +228,7 @@ export default function Home() {
               placeholder="Your email"
               className="mt-4 w-full px-4 py-2 rounded bg-[#1e293b] text-white placeholder-gray-400 focus:outline-none"
             />
-          </div>
+          </div> */}
         </div>
         <div className="text-center mt-10 text-gray-600">
           &copy; 2025 GenuineShield. All rights reserved.
